@@ -7,30 +7,31 @@ import numpy as np
 import itk
 import vtk
 
-from step0_args import *
-# from step4_vti_rendering import *
-# from data_io.itk_dicomIO import itkDicomIO, itkDicomIOMask, itkDicomIOMaskLoop
+from args import parse_args
 from data_io.vti_processing import itkDicomReader_N_2Array, array2vtkImageData, array2vtk_N_Write, ChangePixelValueOfMask
 from data_io.dcm_preprocessing import ThresholdItkImage, NormalizeItkImage
-from misc.utils import *
+from misc.utils import makedirs_ifnot
 # ------------------------------------------------------- #
 np.set_printoptions(threshold=1000)  # sys.maxsize)
 
-### ! Args Setting ! ###
+
+# ### ! Args Setting ! ###
+args = parse_args()
+
 TODAY = str(datetime.date.today().strftime('%y%m%d'))
 NOW = str(datetime.datetime.now().strftime('_%Hh%Mm'))
 
-SOURCE = SOURCE + DTYPE + "/" + SOURCE_COMPANY + "/" + SOURCE_COMPANY + "_exported/"
+SOURCE = args.NAS + "/Data/CT/" + args.DTYPE + "/" + args.source_company + "/" + args.source_company + "_exported/"
+CONVERTED_DIR = args.NAS + "/Data/CT/" + args.DTYPE + "/" + args.source_company + "/vti/"
 
 time_start = datetime.datetime.now()
 print('\n')
-log_text_name = join(SOURCE.split('/')[0], SOURCE_COMPANY + "_vti_converting_" + TODAY + NOW + ".txt")
+log_text_name = join(SOURCE.split('/')[0], args.source_company + "_vti_converting_" + TODAY + NOW + ".txt")
 log_text = open(log_text_name, 'a')
 print('>>> log_text_name : ', log_text_name)
 print('\n\r', file=log_text)
 
 dir_list = glob(SOURCE + "/*/")
-print(dir_list[:3])
 
 for itr, pati_dir in enumerate(dir_list):
     keywords = os.listdir(pati_dir)
@@ -84,9 +85,9 @@ for itr, pati_dir in enumerate(dir_list):
     # print(sum(sum(sum(mandible_arr))))  # 281,227   # 281,227+1,113,537 = 1,394,764
 
     # ### Write Each Mask
-    maxilla_vtiName = join(target_dir,"maxilla.vti")
+    maxilla_vtiName = join(target_dir, "maxilla.vti")
     array2vtk_N_Write(maxilla_arr, maxilla_vtiName, itk_spacing, vtk.VTK_UNSIGNED_CHAR)
-    mandible_vtiName = join(target_dir,"mandible.vti")
+    mandible_vtiName = join(target_dir, "mandible.vti")
     array2vtk_N_Write(mandible_arr, mandible_vtiName, itk_spacing, vtk.VTK_UNSIGNED_CHAR)
     # vtk.VTK_UNSIGNED_CHAR)
     # vtk.VTK_SHORT)
