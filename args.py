@@ -30,7 +30,6 @@ def parse_args():
     parser.add_argument('--loss', type=str, default="ce",
                         choices=["ce", 'softiou', 'ohem', 'focal', 'softce', 'kl',
                                  'dice', 'jaccard', 'tversky'])
-
     # ### Transfer Learning
     parser.add_argument('--transfer', type=bool, default=False)
     parser.add_argument('--pretrained_model', type=str, default="checkpoints.pth")
